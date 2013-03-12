@@ -13,9 +13,11 @@ import play.api.data.Forms._
 import play.api.libs.json.Json
 
 import reactivemongo.bson._
-import models._
 
-object Projets extends Controller with MongoController {
+import models._
+import controllers._
+
+object Projets extends Controller with MongoController with Authorization {
 
     val addForm = Form(
         mapping(
@@ -27,9 +29,11 @@ object Projets extends Controller with MongoController {
         )
     )
 
-    def list = Action { implicit request =>
+    def list = asUser { _ => implicit request =>
         Async {
-            Projet.all.toList.map { projets => Ok(Json.toJson(projets.map { _.toJson })) }
+            Projet.all.toList.map { projets => 
+                Ok(Json.toJson(projets.map { _.toJson })).as("application/javascript") 
+            }
         }
     }
 
@@ -38,6 +42,7 @@ object Projets extends Controller with MongoController {
             errors => BadRequest, 
             projet => {
                 Projet.add(projet)
+                // Retournez le projet qu'on vient de créer.
                 Ok
             }
         )
