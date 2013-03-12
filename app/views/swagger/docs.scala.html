@@ -1,7 +1,9 @@
+@()(implicit req:Request[AnyContent]) 
+
 {
   "apiVersion": "0.2",
   "swaggerVersion": "1.1",
-  "basePath": "http://localhost:9000",
+  "basePath": "@routes.Main.index().absoluteURL()",
   "apis": [
     {
       "path": "/api-docs.json/projets",

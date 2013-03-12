@@ -11,7 +11,7 @@ object Main extends Controller {
     }
 
     // Affiche le JSON de base. 
-    def docs = Action {
+    def docs = Action { implicit request =>
         Ok(views.html.swagger.docs()).as("application/javascript").withHeaders(
             ("Access-Control-Allow-Origin", "*"),
             ("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT"),
@@ -20,7 +20,7 @@ object Main extends Controller {
     }
 
     // Affiche le JSON sur les projets
-    def projets = Action {
+    def projets = Action { implicit request =>
         Ok(views.html.swagger.projets()).as("application/javascript").withHeaders(
             ("Access-Control-Allow-Origin", "*"),
             ("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT"),

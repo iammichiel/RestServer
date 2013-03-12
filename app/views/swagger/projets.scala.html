@@ -1,8 +1,10 @@
+@()(implicit req:Request[AnyContent])
+
 {
   "apiVersion": "0.2",
   "swaggerVersion": "1.1",
-  "basePath": "http://rest.lil-web.fr",
-  "resourcePath": "/projets",
+  "basePath": "@routes.Main.index().absoluteURL()",
+  "resourcePath": "@routes.Main.projets()",
   "apis": [
     {
       "path": "/",
@@ -10,7 +12,7 @@
         {
           "httpMethod": "GET",
           "summary": "Retourne la liste des projets",
-          "responseClass": "void",
+          "responseClass": "List[User]",
           "nickname": "createUsersWithArrayInput"
         }
       ]

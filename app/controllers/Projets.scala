@@ -27,7 +27,7 @@ object Projets extends Controller with MongoController {
         )
     )
 
-    def list = Action {
+    def list = Action { implicit request =>
         Async {
             Projet.all.toList.map { projets => Ok(Json.toJson(projets.map { _.toJson })) }
         }
