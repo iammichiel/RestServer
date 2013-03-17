@@ -18,7 +18,6 @@ case class Personne(
     nom: String
 )
 
-// 
 object Personne {
 
     // Execution contexte. 

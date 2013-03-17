@@ -24,18 +24,18 @@ trait Authorization {
     )
 
     // Retourne le nom d'utilisateur.
-    private def username(request: RequestHeader):Option[String] = {
+    private def username(request: RequestHeader):Option[ApiKey] = {
         request.headers.get("api-key").flatMap { key => 
-            users.find ( _.key == key ).map { _.prenom }
+            users.find ( _.key == key )
         }
     }
 
     // Vérifie que l'utilisateur est bien authentifiée. 
-    def asUser(f: => String => Request[AnyContent] => Result) ={
-        Security.Authenticated(username, onUnauthorized) { email => 
+    def asUser(f: => ApiKey => Request[AnyContent] => Result) ={
+        Security.Authenticated(username, onUnauthorized) { apiKey => 
             Action({ request =>
-                Logger.info("Acces granted - " + email)
-                f(email)(request)
+                Logger.info("Acces granted - " + apiKey.prenom)
+                f(apiKey)(request)
             })
         }
     }

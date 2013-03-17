@@ -14,7 +14,10 @@ import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONReaderHandler
 
 import scala.concurrent.ExecutionContext
 
-case class Projet(id: Option[BSONObjectID], nom: String) {
+import controllers._
+
+case class Projet(id: Option[BSONObjectID], nom:String)
+case class ProjetAPI(id: Option[BSONObjectID], nom: String, api: String) {
     def toJson = {
         Json.toJson(
             Map(
@@ -35,39 +38,43 @@ object Projet {
     val collection = db("projets")
 
     // Reader.
-    implicit object ProjetBSONReader extends BSONReader[Projet] {
-        def fromBSON(document: BSONDocument):Projet = {
+    implicit object ProjetApiBSONReader extends BSONReader[ProjetAPI] {
+        def fromBSON(document: BSONDocument):ProjetAPI = {
             val doc = document.toTraversable
-            Projet(
-                doc.getAs[BSONObjectID]("_id"),
-                doc.getAs[BSONString]("nom").get.value
+            ProjetAPI(
+                doc.getAs[BSONObjectID]("_id"), 
+                doc.getAs[BSONString]("nom").get.value,
+                doc.getAs[BSONString]("api").get.value
             )
         }
     }
 
     // Writer.
-    implicit object PersonneBSONWriter extends BSONWriter[Projet] {
-        def toBSON(projet: Projet) = {
+    implicit object ProjetApiBSONWriter extends BSONWriter[ProjetAPI] {
+        def toBSON(projet: ProjetAPI) = {
             BSONDocument(
-                "_id"    -> projet.id.getOrElse(BSONObjectID.generate),
-                "nom"    -> BSONString(projet.nom)
+                "_id" -> projet.id.getOrElse(BSONObjectID.generate),
+                "nom" -> BSONString(projet.nom),
+                "api" -> BSONString(projet.api)
             )
         }
     }
 
-    def add(p:Projet) = {
-        collection.insert(p)        
+    // Ajoute
+    def add(p:Projet, key:String) = {
+        collection.insert(ProjetAPI(Some(p.id.get), p.nom, key))
     }
 
-    def update(p:Projet) = {
+    // Mise à jour. 
+    def update(p:Projet, api:String) = {
         
     }
 
-    def delete(id:String) = {
+    def delete(id:String, api:String) = {
 
     }
 
-    def all = {
-        collection.find(BSONDocument())
+    def all(key: String) = {
+        collection.find(BSONDocument("api" -> BSONString(key)))
     }
 }

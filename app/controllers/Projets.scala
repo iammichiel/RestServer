@@ -29,19 +29,21 @@ object Projets extends Controller with MongoController with Authorization {
         )
     )
 
-    def list = asUser { _ => implicit request =>
+    // Retourne la liste des utilisateurs. 
+    def list = asUser { apiKey => implicit request =>
         Async {
-            Projet.all.toList.map { projets => 
+            Projet.all(apiKey.key).toList.map { projets => 
                 Ok(Json.toJson(projets.map { _.toJson })).as("application/javascript") 
             }
         }
     }
 
-    def add = Action { implicit request =>
+    // Ajoute un projet
+    def add = asUser { apiKey => implicit request =>
         addForm.bindFromRequest.fold(
             errors => BadRequest, 
             projet => {
-                Projet.add(projet)
+                Projet.add(projet, apiKey.key)
                 // Retournez le projet qu'on vient de créer.
                 Ok
             }
