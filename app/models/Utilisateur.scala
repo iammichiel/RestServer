@@ -1,7 +1,5 @@
 package models
 
-package models
-
 import play.api._
 import play.api.Play.current
 import play.modules.reactivemongo._
@@ -18,5 +16,67 @@ import scala.concurrent.ExecutionContext
 
 case class Utilisateur(
     id: Option[BSONObjectID],
-    prenom: String
+    prenom: String, 
+    nom: String,
+    email: String, 
+    motdepasse: String
 )
+
+case class UtilisateurAPI(utilisateur: Utilisateur, key: String) {
+    def toJson = {
+        Json.toJson(
+            Map(
+                "id"         -> utilisateur.id.get.stringify,
+                "prenom"     -> utilisateur.prenom,
+                "nom"        -> utilisateur.nom, 
+                "email"      -> utilisateur.email, 
+                "motdepasse" -> utilisateur.motdepasse
+            )
+        )
+    }
+}
+
+object Utilisateur {
+
+    // Execution contexte. 
+    implicit def ec: ExecutionContext = ExecutionContext.Implicits.global
+
+    // Acces a la base de données.
+    val db = ReactiveMongoPlugin.db
+    val collection = db("utilisateurs")
+
+    // Reader.
+    implicit object UtilisateurApiBSONReader extends BSONReader[UtilisateurAPI] {
+        def fromBSON(document: BSONDocument):UtilisateurAPI = {
+            val doc = document.toTraversable
+            UtilisateurAPI(
+                Utilisateur(
+                    doc.getAs[BSONObjectID]("_id"), 
+                    doc.getAs[BSONString]("prenom").get.value,
+                    doc.getAs[BSONString]("nom").get.value,
+                    doc.getAs[BSONString]("email").get.value, 
+                    doc.getAs[BSONString]("motdepasse").get.value
+                ), 
+                doc.getAs[BSONString]("key").get.value
+            )
+        }
+    }
+
+    // Writer.
+    implicit object UtilisateurBSONWriter extends BSONWriter[UtilisateurAPI] {
+        def toBSON(u: UtilisateurAPI) = {
+            BSONDocument(
+                "_id"        -> u.utilisateur.id.getOrElse(BSONObjectID.generate),
+                "prenom"     -> BSONString(u.utilisateur.prenom),
+                "nom"        -> BSONString(u.utilisateur.nom),
+                "email"      -> BSONString(u.utilisateur.email),
+                "motdepasse" -> BSONString(u.utilisateur.motdepasse),
+                "key"        -> BSONString(u.key)
+            )
+        }
+    }
+
+    def all(key: String) = {
+        collection.find(BSONDocument("key" -> BSONString(key)))
+    }
+}

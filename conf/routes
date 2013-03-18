@@ -12,8 +12,8 @@ GET     /projets/delete/:id         controllers.Projets.delete(id:String)
 
 # PERSONNES 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GET     /personnes                  controllers.Personnes.list
-GET     /authenticate               controllers.Personnes.authenticate
+GET     /utilisateurs               controllers.Utilisateurs.list
+GET     /authenticate               controllers.Utilisateurs.authenticate
 
 
 # ADMIN

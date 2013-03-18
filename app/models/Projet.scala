@@ -60,6 +60,10 @@ object Projet {
         }
     }
 
+    def all(key: String) = {
+        collection.find(BSONDocument("key" -> BSONString(key)))
+    }
+
     def insert(p:Projet, key:String) = {
         collection.insert(ProjetAPI(Some(p.id.get), p.nom, key))
     }
@@ -76,9 +80,5 @@ object Projet {
             "_id" -> BSONObjectID(id),
             "key" -> BSONString(key)
         ))
-    }
-
-    def all(key: String) = {
-        collection.find(BSONDocument("key" -> BSONString(key)))
     }
 }
