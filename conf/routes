@@ -15,6 +15,11 @@ GET     /projets/delete/:id         controllers.Projets.delete(id:String)
 GET     /personnes                  controllers.Personnes.list
 GET     /authenticate               controllers.Personnes.authenticate
 
+
+# ADMIN
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GET     /admin/delete/:id           controllers.Administration.delete(id:String)
+
 # Assets
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

@@ -71,7 +71,7 @@ object Projet {
     }
 
     def delete(id:String, key:String) = {
-        collection.find(BSONDocument(
+        collection.remove(BSONDocument(
             "_id" -> BSONObjectID(id),
             "key" -> BSONString(key)
         ))

@@ -31,7 +31,6 @@ namespace :deploy do
         run "nohup #{release_path}/start \
             -Dhttp.port=9000 \
             -Dconfig.file=/var/www/rest/conf/application.conf \
-            -Dhttp.address=127.0.0.1 \
             -Dpidfile.path=/var/www/rest/running.pid > #{log_path} 2>&1 &"
     end
 

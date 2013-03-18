@@ -45,8 +45,8 @@ object Projets extends Controller with MongoController with Authorization {
             projet => {
                 Projet.add(projet, apiKey.key)
 
-                // Retournez le projet qu'on vient de créer.
-                Ok
+                // TODO retourne le projet qu'on vient de créer
+                Created
             }
         )
     }
