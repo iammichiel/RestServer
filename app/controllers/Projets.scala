@@ -19,7 +19,7 @@ import controllers._
 
 object Projets extends Controller with MongoController with Authorization {
 
-    val addForm = Form(
+    val projetForm = Form(
         mapping(
             "nom" -> nonEmptyText
         )(
@@ -40,13 +40,20 @@ object Projets extends Controller with MongoController with Authorization {
 
     // Ajoute un projet
     def add = asUser { apiKey => implicit request =>
-        addForm.bindFromRequest.fold(
+        projetForm.bindFromRequest.fold(
             errors => BadRequest, 
             projet => {
                 Projet.add(projet, apiKey.key)
+
                 // Retournez le projet qu'on vient de créer.
                 Ok
             }
         )
+    }
+
+    // Supprime le projet
+    def delete(id:String) = asUser { apiKey => implicit request =>
+        Projet.delete(id, apiKey.key)
+        Ok
     }
 }

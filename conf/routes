@@ -6,6 +6,9 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 GET     /projets                    controllers.Projets.list
 POST    /projets/add                controllers.Projets.add
+GET     /projets/delete/:id         controllers.Projets.delete(id:String)
+
+
 
 # PERSONNES 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

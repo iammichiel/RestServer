@@ -67,11 +67,14 @@ object Projet {
 
     // Mise à jour. 
     def update(p:Projet, key:String) = {
-        
+        // TODO
     }
 
     def delete(id:String, key:String) = {
-
+        collection.find(BSONDocument(
+            "_id" -> BSONObjectID(id),
+            "key" -> BSONString(key)
+        ))
     }
 
     def all(key: String) = {

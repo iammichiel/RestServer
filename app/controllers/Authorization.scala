@@ -20,7 +20,8 @@ trait Authorization {
         ApiKey("Nicolas", "lzbwTVP27YzEXquNe5bPIBqblKsvOhh3"), 
         ApiKey("Guillaume", "iUMfqg6pQB9RHoy00RJBLrb52ji1cpv4"), 
         ApiKey("Valentin", "I2cyqundzRWsphJ67XdtYfMnzaecYpb9"), 
-        ApiKey("Hugo", "lHDoz0vQsuCFBYIh1AKNBwUNvc5Nmoza")
+        ApiKey("Hugo", "lHDoz0vQsuCFBYIh1AKNBwUNvc5Nmoza"), 
+        ApiKey("Victor", "udS7BLeqmu0OJ7VwhuxoD0YaN2KVr2II")
     )
 
     // Retourne le nom d'utilisateur.
