@@ -12,6 +12,7 @@ set :deploy_via, :copy
 # the target directory! In this case repository is really
 # a pointer to the directory
 set :repository,  "target"
+set :log_path, "/var/log/rest/application.log"
  
 # You can use multiple here, if that's what you have
 role :web, "anivia"
@@ -27,7 +28,11 @@ namespace :deploy do
     # Override start run current/start. The options are options to play
     # specifying a config file and pidfile
     task :start do
-        run "nohup #{release_path}/start -Dhttp.port=9000 -Dhttp.address=127.0.0.1 -Dpidfile.path=/var/www/rest/running.pid >/dev/null 2>&1 &"
+        run "nohup #{release_path}/start \
+            -Dhttp.port=9000 \
+            -Dconfig.file=/var/www/rest/conf/application.conf \
+            -Dhttp.address=127.0.0.1 \
+            -Dpidfile.path=/var/www/rest/running.pid > #{log_path} 2>&1 &"
     end
 
     # Handle killing a running instance

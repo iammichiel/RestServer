@@ -49,4 +49,10 @@ object Personne {
             )
         }
     }
+
+    // 
+    def findByUsername() = {
+
+    }
+
 }

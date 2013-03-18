@@ -17,5 +17,6 @@ import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONReaderHandler
 import scala.concurrent.ExecutionContext
 
 case class Utilisateur(
-    id: Option[BSONObjectID]
+    id: Option[BSONObjectID],
+    prenom: String
 )

@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext
 import controllers._
 
 case class Projet(id: Option[BSONObjectID], nom:String)
-case class ProjetAPI(id: Option[BSONObjectID], nom: String, api: String) {
+case class ProjetAPI(id: Option[BSONObjectID], nom: String, key: String) {
     def toJson = {
         Json.toJson(
             Map(
@@ -44,7 +44,7 @@ object Projet {
             ProjetAPI(
                 doc.getAs[BSONObjectID]("_id"), 
                 doc.getAs[BSONString]("nom").get.value,
-                doc.getAs[BSONString]("api").get.value
+                doc.getAs[BSONString]("key").get.value
             )
         }
     }
@@ -55,7 +55,7 @@ object Projet {
             BSONDocument(
                 "_id" -> projet.id.getOrElse(BSONObjectID.generate),
                 "nom" -> BSONString(projet.nom),
-                "api" -> BSONString(projet.api)
+                "key" -> BSONString(projet.key)
             )
         }
     }
@@ -66,15 +66,15 @@ object Projet {
     }
 
     // Mise à jour. 
-    def update(p:Projet, api:String) = {
+    def update(p:Projet, key:String) = {
         
     }
 
-    def delete(id:String, api:String) = {
+    def delete(id:String, key:String) = {
 
     }
 
     def all(key: String) = {
-        collection.find(BSONDocument("api" -> BSONString(key)))
+        collection.find(BSONDocument("key" -> BSONString(key)))
     }
 }

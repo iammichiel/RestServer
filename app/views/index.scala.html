@@ -1,3 +1,5 @@
+@()(implicit req:Request[AnyContent])
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -46,7 +48,7 @@
     <script type="text/javascript">
         $(function () {
             window.swaggerUi = new SwaggerUi({
-                discoveryUrl: "@routes.Main.docs",
+                discoveryUrl: "@routes.Main.docs().absoluteURL()",
                 dom_id:"swagger-ui-container",
                 supportHeaderParams: false,
                 supportedSubmitMethods: ['get', 'post', 'put'],
@@ -77,13 +79,6 @@
 <div id='header'>
     <div class="swagger-ui-wrap">
         <a id="logo" href="http://swagger.wordnik.com">swagger</a>
-
-        <form id='api_selector'>
-            <div class='input'>
-                <input placeholder="api_key" id="input_apiKey" name="apiKey" type="text"/>
-            </div>
-            <div class='input'><a id="explore" href="#">Explore</a></div>
-        </form>
     </div>
 </div>
 

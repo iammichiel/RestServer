@@ -6,7 +6,7 @@ import play.api.mvc._
 object Main extends Controller {
     
     // Affiche la doc
-    def index = Action {
+    def index = Action { implicit request =>
         Ok(views.html.index())
     }
 

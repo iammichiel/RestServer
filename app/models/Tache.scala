@@ -16,6 +16,14 @@ import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONReaderHandler
 
 import scala.concurrent.ExecutionContext
 
+case class TacheAPI(
+    id: Option[BSONObjectID], 
+    projet: BSONObjectID, 
+    nom: String, 
+    dateCreation: DateTime, 
+    key: String
+)
+
 case class Tache(
     id: Option[BSONObjectID],
     projet: BSONObjectID, 
@@ -34,27 +42,33 @@ object Tache {
     val collection = db("projets")
 
     // Reader!
-    implicit object TacheBSONReader extends BSONReader[Tache] {
-        def fromBSON(document: BSONDocument):Tache = {
+    implicit object TacheBSONReader extends BSONReader[TacheAPI] {
+        def fromBSON(document: BSONDocument):TacheAPI = {
             val doc = document.toTraversable
-            Tache(
+            TacheAPI(
                 doc.getAs[BSONObjectID]("_id"),
                 doc.getAs[BSONObjectID]("projet").getOrElse(BSONObjectID.generate),
                 doc.getAs[BSONString]("nom").get.value,
-                new DateTime(doc.getAs[BSONDateTime]("dateCreation").get.value)
+                new DateTime(doc.getAs[BSONDateTime]("dateCreation").get.value), 
+                doc.getAs[BSONString]("key").get.value
             )
         }
     }
 
     // Writer!
-    implicit object TacheBSONWriter extends BSONWriter[Tache] {
-        def toBSON(tache:Tache) = {
+    implicit object TacheBSONWriter extends BSONWriter[TacheAPI] {
+        def toBSON(tache:TacheAPI) = {
             BSONDocument(
                 "_id"          -> tache.id.getOrElse(BSONObjectID.generate),
                 "projet"       -> tache.projet,
                 "nom"          -> BSONString(tache.nom),
-                "dateCreation" -> BSONDateTime(tache.dateCreation.getMillis)
+                "dateCreation" -> BSONDateTime(tache.dateCreation.getMillis), 
+                "key"          -> BSONString(tache.key)
             )
         }
+    }
+
+    def all(api:String) = {
+        collection.find(BSONDocument("api" -> BSONString(api)))
     }
 }
