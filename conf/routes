@@ -2,10 +2,6 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Main 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GET     /                           controllers.Main.index
-
 # PROJETS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 GET     /projets                    controllers.Projets.list
@@ -14,13 +10,7 @@ POST    /projets/add                controllers.Projets.add
 # PERSONNES 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 GET     /personnes                  controllers.Personnes.list
-
 GET     /authenticate               controllers.Personnes.authenticate
-
-# SWAGGER
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GET     /api-docs.json              controllers.Main.docs
-GET     /api-docs.json/projets      controllers.Main.projets
 
 # Assets
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
