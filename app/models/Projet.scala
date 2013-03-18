@@ -60,14 +60,15 @@ object Projet {
         }
     }
 
-    // Ajoute
-    def add(p:Projet, key:String) = {
+    def insert(p:Projet, key:String) = {
         collection.insert(ProjetAPI(Some(p.id.get), p.nom, key))
     }
 
-    // Mise à jour. 
-    def update(p:Projet, key:String) = {
-        // TODO
+    def update(id:String, p:Projet, key:String) = {
+        collection.update(
+            BSONDocument("_id" -> BSONObjectID(id)),
+            ProjetAPI(Some(BSONObjectID(id)), p.nom, key)
+        )
     }
 
     def delete(id:String, key:String) = {

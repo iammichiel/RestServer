@@ -33,7 +33,7 @@ object Projets extends Controller with MongoController with Authorization {
     def list = asUser { apiKey => implicit request =>
         Async {
             Projet.all(apiKey.key).toList.map { projets => 
-                Ok(Json.toJson(projets.map { _.toJson })).as("application/javascript") 
+                Ok(Json.toJson(projets.map { _.toJson })).as("application/javascript")
             }
         }
     }
@@ -43,10 +43,19 @@ object Projets extends Controller with MongoController with Authorization {
         projetForm.bindFromRequest.fold(
             errors => BadRequest, 
             projet => {
-                Projet.add(projet, apiKey.key)
-
-                // TODO retourne le projet qu'on vient de créer
+                Projet.insert(projet, apiKey.key)
                 Created
+            }
+        )
+    }
+
+    // Edition d'un projet
+    def edit(id:String) = asUser { apiKey => implicit request =>
+        projetForm.bindFromRequest.fold(
+            errors => BadRequest, 
+            projet => {
+                Projet.update(id, projet, apiKey.key)
+                Ok
             }
         )
     }
