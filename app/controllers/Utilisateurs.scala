@@ -19,12 +19,35 @@ import controllers._
 
 object Utilisateurs extends Controller with MongoController with Authorization {
 
+    val form = Form(
+        mapping(
+            "prenom"     -> nonEmptyText, 
+            "nom"        -> nonEmptyText, 
+            "email"      -> email, 
+            "motdepasse" -> nonEmptyText
+        )(
+            (prenom, nom, email, motdepasse) => Utilisateur(Some(BSONObjectID.generate), prenom, nom, email, motdepasse)
+        )(
+            (u:Utilisateur) => Some(u.prenom, u.nom, u.email, u.motdepasse)
+        )
+    )
+
     def list = asUser { apiKey => _ =>
         Async {
             Utilisateur.all(apiKey.key).toList.map { utilisateurs => 
                 Ok(Json.toJson(utilisateurs.map { _.toJson })).as("application/javascript")
             }
         }
+    }
+
+    def add = asUser { apiKey => implicit request =>
+        form.bindFromRequest.fold(
+            errors => BadRequest, 
+            utilisateur => {
+                Utilisateur.insert(utilisateur, apiKey.key)
+                Created
+            }
+        )
     }
 
     def authenticate = TODO

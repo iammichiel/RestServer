@@ -4,23 +4,24 @@
 
 # PROJETS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GET     /projets                    controllers.Projets.list
-POST    /projets/add                controllers.Projets.add
-POST    /projets/edit/:id           controllers.Projets.edit(id:String)
-GET     /projets/delete/:id         controllers.Projets.delete(id:String)
+GET     /projets                        controllers.Projets.list
+POST    /projets/add                    controllers.Projets.add
+POST    /projets/edit/:id               controllers.Projets.edit(id:String)
+GET     /projets/delete/:id             controllers.Projets.delete(id:String)
 
 
 # PERSONNES 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GET     /utilisateurs               controllers.Utilisateurs.list
-GET     /authenticate               controllers.Utilisateurs.authenticate
+GET     /utilisateurs                   controllers.Utilisateurs.list
+POST    /utilisateurs/add               controllers.Utilisateurs.add
+GET     /utilisateurs/authenticate      controllers.Utilisateurs.authenticate
 
 
 # ADMIN
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GET     /admin/delete/:id           controllers.Administration.delete(id:String)
+GET     /admin/delete/:id               controllers.Administration.delete(id:String)
 
 
 # Assets
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /assets/*file                   controllers.Assets.at(path="/public", file)

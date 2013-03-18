@@ -79,4 +79,8 @@ object Utilisateur {
     def all(key: String) = {
         collection.find(BSONDocument("key" -> BSONString(key)))
     }
+
+    def insert(u:Utilisateur, key:String) = {
+        collection.insert(UtilisateurAPI(u, key))
+    }
 }
