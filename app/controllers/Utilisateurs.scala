@@ -32,6 +32,13 @@ object Utilisateurs extends Controller with MongoController with Authorization {
         )
     )
 
+    val loginForm = Form(
+        tuple(
+            "login"      -> nonEmptyText, 
+            "motdepasse" -> nonEmptyText
+        )
+    )
+
     def list = asUser { apiKey => _ =>
         Async {
             Utilisateur.all(apiKey.key).toList.map { utilisateurs => 
@@ -50,5 +57,19 @@ object Utilisateurs extends Controller with MongoController with Authorization {
         )
     }
 
-    def authenticate = TODO
+    def authenticate = asUser { apiKey => implicit request => 
+        loginForm.bindFromRequest.fold(
+            errors => BadRequest("Username and password have to be defined"),
+            loginTuple => {
+                Async {
+                    Utilisateur.authenticate(loginTuple._1, loginTuple._2).map { optionUtilisateur =>
+                        optionUtilisateur match {
+                            case Some(u) => Ok
+                            case _ => NotFound
+                        }
+                    }
+                }
+            }
+        )
+    }
 }

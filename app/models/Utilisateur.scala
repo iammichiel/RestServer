@@ -83,4 +83,13 @@ object Utilisateur {
     def insert(u:Utilisateur, key:String) = {
         collection.insert(UtilisateurAPI(u, key))
     }
+
+    def authenticate(email: String, motdepasse: String) = {
+        collection.find(
+            BSONDocument(
+                "email" -> BSONString(email), 
+                "motdepasse" -> BSONString(motdepasse)
+            )
+        ).headOption
+    }
 }
