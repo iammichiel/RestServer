@@ -16,20 +16,25 @@ import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONReaderHandler
 
 import scala.concurrent.ExecutionContext
 
-case class TacheAPI(
-    id: Option[BSONObjectID], 
-    projet: BSONObjectID, 
-    nom: String, 
-    dateCreation: DateTime, 
-    key: String
-)
-
 case class Tache(
     id: Option[BSONObjectID],
     projet: BSONObjectID, 
     nom: String,
     dateCreation: DateTime
 )
+case class TacheAPI(tache: Tache, key: String) {
+    def toJson = {
+        Json.toJson(
+            Map(
+                "id"           -> tache.id.get.stringify,
+                "projet"       -> tache.projet.stringify, 
+                "nom"          -> tache.nom, 
+                "dateCreation" -> tache.dateCreation.getMillis.toString
+
+            )
+        )
+    }
+}
 
 // Tache
 object Tache {
@@ -46,10 +51,12 @@ object Tache {
         def fromBSON(document: BSONDocument):TacheAPI = {
             val doc = document.toTraversable
             TacheAPI(
-                doc.getAs[BSONObjectID]("_id"),
-                doc.getAs[BSONObjectID]("projet").getOrElse(BSONObjectID.generate),
-                doc.getAs[BSONString]("nom").get.value,
-                new DateTime(doc.getAs[BSONDateTime]("dateCreation").get.value), 
+                Tache(
+                    doc.getAs[BSONObjectID]("_id"),
+                    doc.getAs[BSONObjectID]("projet").getOrElse(BSONObjectID.generate),
+                    doc.getAs[BSONString]("nom").get.value,
+                    new DateTime(doc.getAs[BSONDateTime]("dateCreation").get.value)
+                ),
                 doc.getAs[BSONString]("key").get.value
             )
         }
@@ -57,18 +64,23 @@ object Tache {
 
     // Writer!
     implicit object TacheBSONWriter extends BSONWriter[TacheAPI] {
-        def toBSON(tache:TacheAPI) = {
+        def toBSON(t:TacheAPI) = {
             BSONDocument(
-                "_id"          -> tache.id.getOrElse(BSONObjectID.generate),
-                "projet"       -> tache.projet,
-                "nom"          -> BSONString(tache.nom),
-                "dateCreation" -> BSONDateTime(tache.dateCreation.getMillis), 
-                "key"          -> BSONString(tache.key)
+                "_id"          -> t.tache.id.getOrElse(BSONObjectID.generate),
+                "projet"       -> t.tache.projet,
+                "nom"          -> BSONString(t.tache.nom),
+                "dateCreation" -> BSONDateTime(t.tache.dateCreation.getMillis), 
+                "key"          -> BSONString(t.key)
             )
         }
     }
 
-    def all(api:String) = {
-        collection.find(BSONDocument("api" -> BSONString(api)))
+    def all(idProjet: String, api:String) = {
+        collection.find(
+            BSONDocument(
+                "api"    -> BSONString(api), 
+                "projet" -> BSONObjectID(idProjet)
+            )
+        )
     }
 }

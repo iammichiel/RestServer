@@ -18,6 +18,16 @@ POST    /utilisateurs/authenticate      controllers.Utilisateurs.authenticate
 POST    /utilisateurs/edit/:id          controllers.Utilisateurs.edit(id: String)
 GET     /utilisateurs/delete/:id        controllers.Utilisateurs.delete(id: String)
 
+# TACHE
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GET     /taches/:idProjet               controllers.Taches.listProjet(idProjet: String)
+#POST    /utilisateurs/add               controllers.Utilisateurs.add
+#POST    /utilisateurs/authenticate      controllers.Utilisateurs.authenticate
+#POST    /utilisateurs/edit/:id          controllers.Utilisateurs.edit(id: String)
+#GET     /utilisateurs/delete/:id        controllers.Utilisateurs.delete(id: String)
+
+
+
 # ADMIN
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 GET     /admin/delete/:id               controllers.Administration.delete(id:String)
