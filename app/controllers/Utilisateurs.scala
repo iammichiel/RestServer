@@ -72,4 +72,19 @@ object Utilisateurs extends Controller with MongoController with Authorization {
             }
         )
     }
+
+    def delete(id: String) = asUser { apiKey => _ => 
+        Utilisateur.delete(id, apiKey.key)
+        Ok
+    }
+
+    def edit(id: String) = asUser { apiKey => implicit request => 
+        form.bindFromRequest.fold(
+            errors => BadRequest, 
+            utilisateur => {
+                Utilisateur.update(id, utilisateur, apiKey.key)
+                Ok
+            }
+        )
+    }
 }

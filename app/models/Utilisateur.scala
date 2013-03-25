@@ -84,6 +84,23 @@ object Utilisateur {
         collection.insert(UtilisateurAPI(u, key))
     }
 
+    def update(id:String, u:Utilisateur, key:String) = {
+        collection.update(
+            BSONDocument("_id" -> BSONObjectID(id)),
+            UtilisateurAPI(
+                Utilisateur(Some(BSONObjectID(id)), u.prenom, u.nom, u.email, u.motdepasse), 
+                key
+            )
+        )
+    }
+
+    def delete(id:String, key:String) = {
+        collection.remove(BSONDocument(
+            "_id" -> BSONObjectID(id),
+            "key" -> BSONString(key)
+        ))
+    }
+
     def authenticate(email: String, motdepasse: String) = {
         collection.find(
             BSONDocument(
