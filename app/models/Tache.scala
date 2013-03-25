@@ -20,7 +20,9 @@ case class Tache(
     id: Option[BSONObjectID],
     projet: BSONObjectID, 
     nom: String,
-    dateCreation: DateTime
+    utilisateur: Option[BSONObjectID],
+    dateCreation: DateTime, 
+    commentaire: String
 )
 case class TacheAPI(tache: Tache, key: String) {
     def toJson = {
@@ -29,8 +31,9 @@ case class TacheAPI(tache: Tache, key: String) {
                 "id"           -> tache.id.get.stringify,
                 "projet"       -> tache.projet.stringify, 
                 "nom"          -> tache.nom, 
-                "dateCreation" -> tache.dateCreation.getMillis.toString
-
+                "utilisateur"  -> tache.utilisateur.map { _.stringify }.getOrElse { "" },
+                "dateCreation" -> tache.dateCreation.getMillis.toString,
+                "commentaire"  -> tache.commentaire
             )
         )
     }
@@ -55,7 +58,9 @@ object Tache {
                     doc.getAs[BSONObjectID]("_id"),
                     doc.getAs[BSONObjectID]("projet").getOrElse(BSONObjectID.generate),
                     doc.getAs[BSONString]("nom").get.value,
-                    new DateTime(doc.getAs[BSONDateTime]("dateCreation").get.value)
+                    doc.getAs[BSONObjectID]("utilisateur").map { t => t },
+                    new DateTime(doc.getAs[BSONDateTime]("dateCreation")),
+                    doc.getAs[BSONString]("commentaire").map { _.value }.getOrElse("")
                 ),
                 doc.getAs[BSONString]("key").get.value
             )
@@ -69,7 +74,9 @@ object Tache {
                 "_id"          -> t.tache.id.getOrElse(BSONObjectID.generate),
                 "projet"       -> t.tache.projet,
                 "nom"          -> BSONString(t.tache.nom),
-                "dateCreation" -> BSONDateTime(t.tache.dateCreation.getMillis), 
+                "utilisateur"  -> t.tache.utilisateur.getOrElse(BSONNull),
+                "dateCreation" -> BSONDateTime(t.tache.dateCreation.getMillis),
+                "commentaire"  -> BSONString(t.tache.commentaire),
                 "key"          -> BSONString(t.key)
             )
         }
