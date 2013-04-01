@@ -1,27 +1,20 @@
 package models
 
+import anorm._
+import anorm.SqlParser._
+
 import play.api._
+import play.api.db._
 import play.api.Play.current
-import play.modules.reactivemongo._
 
 import play.api.libs.json.Json
 
-import reactivemongo.api._
-import reactivemongo.bson._
-import reactivemongo.bson.handlers._
-import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONDocumentWriter
-import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONReaderHandler
-
-import scala.concurrent.ExecutionContext
-
-import controllers._
-
-case class Projet(id: Option[BSONObjectID], nom:String)
-case class ProjetAPI(id: Option[BSONObjectID], nom: String, key: String) {
+case class Projet(id: Pk[Long] = NotAssigned, nom:String)
+case class ProjetAPI(id: Pk[Long] = NotAssigned, nom: String, key: String) {
     def toJson = {
         Json.toJson(
             Map(
-                "id"  -> id.get.stringify,
+                "id"  -> id.toString,
                 "nom" -> nom
             )
         )
@@ -30,55 +23,55 @@ case class ProjetAPI(id: Option[BSONObjectID], nom: String, key: String) {
 
 object Projet {
 
-    // Execution contexte. 
-    implicit def ec: ExecutionContext = ExecutionContext.Implicits.global
-
-    // Acces a la base de données.
-    val db = ReactiveMongoPlugin.db
-    val collection = db("projets")
-
-    // Reader.
-    implicit object ProjetApiBSONReader extends BSONReader[ProjetAPI] {
-        def fromBSON(document: BSONDocument):ProjetAPI = {
-            val doc = document.toTraversable
-            ProjetAPI(
-                doc.getAs[BSONObjectID]("_id"), 
-                doc.getAs[BSONString]("nom").get.value,
-                doc.getAs[BSONString]("key").get.value
-            )
-        }
-    }
-
-    // Writer.
-    implicit object ProjetApiBSONWriter extends BSONWriter[ProjetAPI] {
-        def toBSON(projet: ProjetAPI) = {
-            BSONDocument(
-                "_id" -> projet.id.getOrElse(BSONObjectID.generate),
-                "nom" -> BSONString(projet.nom),
-                "key" -> BSONString(projet.key)
-            )
+    val simple = {
+        get[Pk[Long]]("id_projet") ~
+        get[String]("nom") ~
+        get[String]("id_utilisateur") map {
+            case id~nom~utilisateur => ProjetAPI(id, nom, utilisateur)
         }
     }
 
     def all(key: String) = {
-        collection.find(BSONDocument("key" -> BSONString(key)))
+        DB.withConnection { implicit connection => 
+            SQL("SELECT * FROM projets").as(simple * )
+        }
     }
 
     def insert(p:Projet, key:String) = {
-        collection.insert(ProjetAPI(Some(p.id.get), p.nom, key))
+        DB.withConnection { implicit connection => 
+            SQL(
+                "INSERT INTO projets (nom, id_utilisateur) VALUES ({nom}n {utilisateur})"
+            ).on(
+                'nom         -> p.nom, 
+                'utilisateur -> key
+            ).executeInsert()
+        }
     }
 
-    def update(id:String, p:Projet, key:String) = {
-        collection.update(
-            BSONDocument("_id" -> BSONObjectID(id)),
-            ProjetAPI(Some(BSONObjectID(id)), p.nom, key)
-        )
+    def update(idProjet:String, p:Projet, key:String) = {
+        DB.withConnection { implicit connection => 
+            SQL(
+                """
+                    UPDATE projets SET 
+                        nom = {nom} 
+                    WHERE id_projet = {idProjet} and key = {key}
+                """
+            ).on(
+                'nom      -> p.nom, 
+                'idProjet -> idProjet,
+                'key      -> key
+            ).executeUpdate()
+        }
     }
 
-    def delete(id:String, key:String) = {
-        collection.remove(BSONDocument(
-            "_id" -> BSONObjectID(id),
-            "key" -> BSONString(key)
-        ))
+    def delete(idProjet:String, key:String) = {
+        DB.withConnection { implicit connection => 
+            SQL(
+                "DELETE FROM projets WHERE id_projet = {idProjet} AND key = {key}"
+            ).on(
+                'idProjet -> idProjet, 
+                'key      -> key 
+            ).executeUpdate()
+        }
     }
 }

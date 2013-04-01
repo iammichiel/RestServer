@@ -1,23 +1,20 @@
 package controllers
 
+import anorm._
+
 import play.api._
 import play.api.Play.current
 import play.api.mvc._
 import play.api.libs.iteratee._
 
-import play.modules.reactivemongo._
-import play.modules.reactivemongo.PlayBsonImplicits._
-
 import play.api.data._
 import play.api.data.Forms._
 import play.api.libs.json.Json
 
-import reactivemongo.bson._
-
 import models._
 import controllers._
 
-object Utilisateurs extends Controller with MongoController with Authorization {
+object Utilisateurs extends Controller with Authorization {
 
     val form = Form(
         mapping(
@@ -26,7 +23,7 @@ object Utilisateurs extends Controller with MongoController with Authorization {
             "email"      -> email, 
             "motdepasse" -> nonEmptyText
         )(
-            (prenom, nom, email, motdepasse) => Utilisateur(Some(BSONObjectID.generate), prenom, nom, email, motdepasse)
+            (prenom, nom, email, motdepasse) => Utilisateur(NotAssigned, prenom, nom, email, motdepasse)
         )(
             (u:Utilisateur) => Some(u.prenom, u.nom, u.email, u.motdepasse)
         )
@@ -40,11 +37,11 @@ object Utilisateurs extends Controller with MongoController with Authorization {
     )
 
     def list = asUser { apiKey => _ =>
-        Async {
-            Utilisateur.all(apiKey.key).toList.map { utilisateurs => 
-                Ok(Json.toJson(utilisateurs.map { _.toJson })).as("application/javascript")
-            }
-        }
+        Ok(
+            Json.toJson(
+                Utilisateur.all(apiKey.key).map { p => p.toJson }.toList
+            )
+        ).as("application/javascript")
     }
 
     def add = asUser { apiKey => implicit request =>
@@ -61,14 +58,7 @@ object Utilisateurs extends Controller with MongoController with Authorization {
         loginForm.bindFromRequest.fold(
             errors => BadRequest("Username and password have to be defined"),
             loginTuple => {
-                Async {
-                    Utilisateur.authenticate(loginTuple._1, loginTuple._2).map { optionUtilisateur =>
-                        optionUtilisateur match {
-                            case Some(u) => Ok
-                            case _ => NotFound
-                        }
-                    }
-                }
+                Utilisateur.authenticate(loginTuple._1, loginTuple._2).map { optionUtilisateur => Ok }.getOrElse { NotFound}
             }
         )
     }

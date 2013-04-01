@@ -1,93 +1,83 @@
 package models
 
-import org.joda.time.DateTime
+import anorm._
+import anorm.SqlParser._
 
 import play.api._
+import play.api.db._
 import play.api.Play.current
-import play.modules.reactivemongo._
-
 import play.api.libs.json.Json
 
-import reactivemongo.api._
-import reactivemongo.bson._
-import reactivemongo.bson.handlers._
-import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONDocumentWriter
-import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONReaderHandler
-
-import scala.concurrent.ExecutionContext
+import org.joda.time.DateTime
 
 case class Tache(
-    id: Option[BSONObjectID],
-    projet: BSONObjectID, 
+    id: Pk[Long] = NotAssigned,
     nom: String,
-    utilisateur: Option[BSONObjectID],
+    statut: Int,
+    utilisateur: Option[Long],
     dateCreation: DateTime, 
-    commentaire: String
-)
-case class TacheAPI(tache: Tache, key: String) {
+    description: Option[String]
+) {
     def toJson = {
         Json.toJson(
             Map(
-                "id"           -> tache.id.get.stringify,
-                "projet"       -> tache.projet.stringify, 
-                "nom"          -> tache.nom, 
-                "utilisateur"  -> tache.utilisateur.map { _.stringify }.getOrElse { "" },
-                "dateCreation" -> tache.dateCreation.getMillis.toString,
-                "commentaire"  -> tache.commentaire
+                "id"           -> id.toString,
+                "nom"          -> nom, 
+                "statut"       -> statut.toString,
+                "utilisateur"  -> utilisateur.map { _.toString }.getOrElse { "" },
+                "dateCreation" -> dateCreation.getMillis.toString,
+                "description"  -> description.map { _.toString }.getOrElse { "" }
             )
         )
     }
 }
 
+case class TacheAPI(tache: Tache, key: String)
+
 // Tache
 object Tache {
 
-    // Execution contexte. 
-    implicit def ec: ExecutionContext = ExecutionContext.Implicits.global
-
-    // Acces a la base de données.
-    val db = ReactiveMongoPlugin.db
-    val collection = db("projets")
-
-    // Reader!
-    implicit object TacheBSONReader extends BSONReader[TacheAPI] {
-        def fromBSON(document: BSONDocument):TacheAPI = {
-            val doc = document.toTraversable
-            TacheAPI(
-                Tache(
-                    doc.getAs[BSONObjectID]("_id"),
-                    doc.getAs[BSONObjectID]("projet").getOrElse(BSONObjectID.generate),
-                    doc.getAs[BSONString]("nom").get.value,
-                    doc.getAs[BSONObjectID]("utilisateur").map { t => t },
-                    new DateTime(doc.getAs[BSONDateTime]("dateCreation")),
-                    doc.getAs[BSONString]("commentaire").map { _.value }.getOrElse("")
-                ),
-                doc.getAs[BSONString]("key").get.value
-            )
+    val simple = {
+        get[Pk[Long]]("id_tache") ~
+        get[String]("nom") ~
+        get[Int]("statut") ~
+        get[Option[Long]]("id_utilisateur") ~
+        get[Long]("date_creation") ~
+        get[Option[String]]("description") map {
+            case id~nom~statut~utilisateur~dateCreation~description => 
+                Tache(id, nom, statut, utilisateur, new DateTime(dateCreation), description)
         }
     }
 
-    // Writer!
-    implicit object TacheBSONWriter extends BSONWriter[TacheAPI] {
-        def toBSON(t:TacheAPI) = {
-            BSONDocument(
-                "_id"          -> t.tache.id.getOrElse(BSONObjectID.generate),
-                "projet"       -> t.tache.projet,
-                "nom"          -> BSONString(t.tache.nom),
-                "utilisateur"  -> t.tache.utilisateur.getOrElse(BSONNull),
-                "dateCreation" -> BSONDateTime(t.tache.dateCreation.getMillis),
-                "commentaire"  -> BSONString(t.tache.commentaire),
-                "key"          -> BSONString(t.key)
-            )
+    def all(idProjet:String, key:String) = {
+        DB.withConnection { implicit connection =>
+            SQL(
+                "SELECT * FROM taches WHERE id_projet = {idProjet} and key = {key}"
+            ).on(
+                'idProjet -> idProjet, 
+                'key      -> key
+            ).as(simple *)
         }
     }
 
-    def all(idProjet: String, api:String) = {
-        collection.find(
-            BSONDocument(
-                "api"    -> BSONString(api), 
-                "projet" -> BSONObjectID(idProjet)
-            )
-        )
+    def add(idProjet:String, tache:Tache, key:String) = {
+        DB.withConnection { implicit connection =>
+            SQL(
+                """
+                    INSERT INTO taches 
+                        (nom, statut, utilisateur, date_creation, description, id_projet, key)
+                    VALUES 
+                        ({nom}, {statut}, {utilisateur}, {dateCreation}, {description}, {idProjet}, {key})
+                """
+            ).on(
+                'nom          -> tache.nom,
+                'statut       -> tache.statut, 
+                'utilisateur  -> tache.utilisateur, 
+                'dateCreation -> tache.dateCreation, 
+                'description  -> tache.description, 
+                'idProjet     -> idProjet, 
+                'key          -> key
+            ).executeInsert()
+        }
     }
 }
