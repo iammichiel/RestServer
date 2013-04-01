@@ -38,10 +38,8 @@ object Projets extends Controller with Authorization {
         projetForm.bindFromRequest.fold(
             errors => BadRequest(errors.errorsAsJson), 
             projet => {
-                Projet.insert(projet, apiKey.key) match {
-                    case true  => Created
-                    case false => InternalServerError("Mysql exception")
-                }
+                Projet.insert(projet, apiKey.key)
+                Created
             }
         )
     }
@@ -51,19 +49,15 @@ object Projets extends Controller with Authorization {
         projetForm.bindFromRequest.fold(
             errors => BadRequest(errors.errorsAsJson), 
             projet => {
-                Projet.update(id, projet, apiKey.key) match {
-                    case true  => Ok
-                    case false => InternalServerError("Mysql exception")
-                }
+                Projet.update(id, projet, apiKey.key) 
+                Ok
             }
         )
     }
 
     // Supprime le projet
     def delete(id:String) = asUser { apiKey => implicit request =>
-        Projet.delete(id, apiKey.key) match {
-            case true  => Ok
-            case false => InternalServerError("Mysql exception")
-        }
+        Projet.delete(id, apiKey.key)
+        Ok
     }
 }
