@@ -9,6 +9,7 @@ import play.api.libs.iteratee._
 
 import play.api.data._
 import play.api.data.Forms._
+import play.api.data.validation.Constraints._
 import play.api.libs.json.Json
 
 import models._
@@ -18,9 +19,9 @@ object Utilisateurs extends Controller with Authorization {
 
     val form = Form(
         mapping(
-            "prenom"     -> nonEmptyText, 
-            "nom"        -> nonEmptyText, 
-            "email"      -> email, 
+            "prenom"     -> nonEmptyText(maxLength = 80), 
+            "nom"        -> nonEmptyText(maxLength = 80), 
+            "email"      -> email.verifying(maxLength(255)), 
             "motdepasse" -> nonEmptyText
         )(
             (prenom, nom, email, motdepasse) => Utilisateur(NotAssigned, prenom, nom, email, motdepasse)
@@ -46,7 +47,7 @@ object Utilisateurs extends Controller with Authorization {
 
     def add = asUser { apiKey => implicit request =>
         form.bindFromRequest.fold(
-            errors => BadRequest, 
+            errors => BadRequest(errors.errorsAsJson), 
             utilisateur => {
                 Utilisateur.insert(utilisateur, apiKey.key)
                 Created
@@ -58,7 +59,19 @@ object Utilisateurs extends Controller with Authorization {
         loginForm.bindFromRequest.fold(
             errors => BadRequest("Username and password have to be defined"),
             loginTuple => {
-                Utilisateur.authenticate(loginTuple._1, loginTuple._2).map { optionUtilisateur => Ok }.getOrElse { NotFound}
+                Utilisateur.authenticate(loginTuple._1, loginTuple._2, apiKey.key).map { 
+                    optionUtilisateur => Ok 
+                }.getOrElse { NotFound}
+            }
+        )
+    }
+
+    def edit(id: String) = asUser { apiKey => implicit request => 
+        form.bindFromRequest.fold(
+            errors => BadRequest(errors.errorsAsJson), 
+            utilisateur => {
+                Utilisateur.update(id, utilisateur, apiKey.key)
+                Ok
             }
         )
     }
@@ -66,15 +79,5 @@ object Utilisateurs extends Controller with Authorization {
     def delete(id: String) = asUser { apiKey => _ => 
         Utilisateur.delete(id, apiKey.key)
         Ok
-    }
-
-    def edit(id: String) = asUser { apiKey => implicit request => 
-        form.bindFromRequest.fold(
-            errors => BadRequest, 
-            utilisateur => {
-                Utilisateur.update(id, utilisateur, apiKey.key)
-                Ok
-            }
-        )
     }
 }
