@@ -15,11 +15,12 @@ object Projets extends Controller with Authorization {
 
     val projetForm = Form(
         mapping(
-            "nom" -> nonEmptyText
+            "nom"         -> nonEmptyText(maxLength = 80),
+            "description" -> optional(text)
         )(
-            (nom) => Projet(NotAssigned, nom)
+            (nom, description) => Projet(NotAssigned, nom, description)
         )(
-            (p:Projet) => Some(p.nom)
+            (p:Projet) => Some(p.nom, p.description)
         )
     )
 
@@ -35,10 +36,12 @@ object Projets extends Controller with Authorization {
     // Ajoute un projet
     def add = asUser { apiKey => implicit request =>
         projetForm.bindFromRequest.fold(
-            errors => BadRequest, 
+            errors => BadRequest(errors.errorsAsJson), 
             projet => {
-                Projet.insert(projet, apiKey.key)
-                Created
+                Projet.insert(projet, apiKey.key) match {
+                    case true  => Created
+                    case false => InternalServerError("Mysql exception")
+                }
             }
         )
     }
@@ -46,17 +49,21 @@ object Projets extends Controller with Authorization {
     // Edition d'un projet
     def edit(id:String) = asUser { apiKey => implicit request =>
         projetForm.bindFromRequest.fold(
-            errors => BadRequest, 
+            errors => BadRequest(errors.errorsAsJson), 
             projet => {
-                Projet.update(id, projet, apiKey.key)
-                Ok
+                Projet.update(id, projet, apiKey.key) match {
+                    case true  => Ok
+                    case false => InternalServerError("Mysql exception")
+                }
             }
         )
     }
 
     // Supprime le projet
     def delete(id:String) = asUser { apiKey => implicit request =>
-        Projet.delete(id, apiKey.key)
-        Ok
+        Projet.delete(id, apiKey.key) match {
+            case true  => Ok
+            case false => InternalServerError("Mysql exception")
+        }
     }
 }

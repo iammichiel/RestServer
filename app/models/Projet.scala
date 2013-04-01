@@ -9,16 +9,12 @@ import play.api.Play.current
 
 import play.api.libs.json.Json
 
-case class Projet(id: Pk[Long] = NotAssigned, nom:String)
-case class ProjetAPI(id: Pk[Long] = NotAssigned, nom: String, key: String) {
-    def toJson = {
-        Json.toJson(
-            Map(
-                "id"  -> id.toString,
-                "nom" -> nom
-            )
-        )
-    }
+case class Projet(id: Pk[Long] = NotAssigned, nom:String, description: Option[String]) {
+    def toJson = Json.toJson(Map(
+        "id"          -> id.toString, 
+        "nom"         -> nom, 
+        "description" -> description.getOrElse("")
+    ))
 }
 
 object Projet {
@@ -26,52 +22,57 @@ object Projet {
     val simple = {
         get[Pk[Long]]("id_projet") ~
         get[String]("nom") ~
-        get[String]("id_utilisateur") map {
-            case id~nom~utilisateur => ProjetAPI(id, nom, utilisateur)
+        get[Option[String]]("description") map {
+            case id~nom~description => Projet(id, nom, description)   
         }
     }
 
-    def all(key: String) = {
-        DB.withConnection { implicit connection => 
-            SQL("SELECT * FROM projets").as(simple * )
-        }
-    }
-
-    def insert(p:Projet, key:String) = {
+    def all(apikey: String) = {
         DB.withConnection { implicit connection => 
             SQL(
-                "INSERT INTO projets (nom, id_utilisateur) VALUES ({nom}n {utilisateur})"
+                "SELECT id_projet, nom FROM projets WHERE apikey = {apikey}"
             ).on(
-                'nom         -> p.nom, 
-                'utilisateur -> key
-            ).executeInsert()
+                'apikey -> apikey
+            ).as(simple *)
         }
     }
 
-    def update(idProjet:String, p:Projet, key:String) = {
+    def insert(p:Projet, apikey:String) = {
+        DB.withConnection { implicit connection => 
+            SQL(
+                "INSERT INTO projets (nom, apikey) VALUES ({nom}, {apikey})"
+            ).on(
+                'nom    -> p.nom, 
+                'apikey -> apikey
+            ).execute()
+        }
+    }
+
+    def update(idProjet:String, p:Projet, apikey:String) = {
         DB.withConnection { implicit connection => 
             SQL(
                 """
                     UPDATE projets SET 
                         nom = {nom} 
-                    WHERE id_projet = {idProjet} and key = {key}
+                    WHERE 
+                        id_projet = {idProjet} and apikey = {apikey}
                 """
             ).on(
                 'nom      -> p.nom, 
                 'idProjet -> idProjet,
-                'key      -> key
-            ).executeUpdate()
+                'apikey   -> apikey
+            ).execute()
         }
     }
 
-    def delete(idProjet:String, key:String) = {
+    def delete(idProjet:String, apikey:String) = {
         DB.withConnection { implicit connection => 
             SQL(
-                "DELETE FROM projets WHERE id_projet = {idProjet} AND key = {key}"
+                "DELETE FROM projets WHERE id_projet = {idProjet} AND apikey = {apikey}"
             ).on(
                 'idProjet -> idProjet, 
-                'key      -> key 
-            ).executeUpdate()
+                'apikey   -> apikey 
+            ).execute()
         }
     }
 }
