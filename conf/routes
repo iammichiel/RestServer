@@ -4,6 +4,12 @@
 
 GET     /                               controllers.Application.index
 
+# STATUTS
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GET     /statuts                        controllers.Statuts.list
+GET     /statuts/:id                    controllers.Statuts.id(id:String)
+
+
 # PROJETS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 GET     /projets                        controllers.Projets.list
