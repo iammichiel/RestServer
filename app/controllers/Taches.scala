@@ -27,10 +27,10 @@ object Taches extends Controller with Authorization {
                 Tache(
                     NotAssigned, 
                     nom, 
+                    description,
                     statut,
-                    utilisateur, 
                     new DateTime(), 
-                    description
+                    utilisateur
                 )
 
         )(

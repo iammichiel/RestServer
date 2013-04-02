@@ -14,7 +14,7 @@ class ProjetsSpec extends Specification {
         additionalConfiguration = (inMemoryDatabase(options = Map("MODE" -> "MySQL")))
     )
 
-    "Projets" should {
+    "L'API Projets : " should {
     
         "lister les projets à vide" in {
             running(defaultApplication) {
@@ -63,11 +63,5 @@ class ProjetsSpec extends Specification {
                 status(result) must equalTo(CREATED)
             }
         }
-
-        // "ajouter un projet invalide" in {
-        //     running(FakeApplication()) {
-        //         route(FakeRequest(POST, "/"))
-        //     }
-        // } 
     }
 }
