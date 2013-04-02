@@ -11,7 +11,9 @@ object Application extends Controller with Authorization {
 
     def index = Action {
         val p:PegDownProcessor = new PegDownProcessor();
-        Ok(p.markdownToHtml(views.html.index().toString)).as("html")
+        val t:String = p.markdownToHtml(views.html.index().toString)
+        
+        Ok(views.html.main(t))
     }
 
     def deleteAll = asUser { apiKey => _ => 
