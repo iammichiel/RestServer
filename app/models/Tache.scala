@@ -14,7 +14,7 @@ import org.joda.time.DateTime
 
 case class Tache(
     id: Pk[Long] = NotAssigned,
-    nom: String,
+    titre: String,
     description: Option[String],
     statut: Int,
     dateCreation: DateTime, 
@@ -24,7 +24,7 @@ case class Tache(
         Json.toJson(
             Map(
                 "id"           -> id.toString,
-                "nom"          -> nom, 
+                "titre"        -> titre, 
                 "description"  -> description.map { _.toString }.getOrElse { "" },
                 "statut"       -> statut.toString,
                 "dateCreation" -> dateCreation.getMillis.toString,
@@ -44,12 +44,12 @@ object Tache {
         get[Int]("statut") ~
         get[Long]("date_creation") ~
         get[Option[Long]]("id_utilisateur") map {
-            case id~nom~description~statut~dateCreation~idUtilisateur => 
-                Tache(id, nom, description, statut, new DateTime(dateCreation), idUtilisateur)
+            case id~titre~description~statut~dateCreation~idUtilisateur => 
+                Tache(id, titre, description, statut, new DateTime(dateCreation), idUtilisateur)
         }
     }
 
-    def all(idProjet:String, key:String) = {
+    def all(idProjet:String, apikey:String) = {
         DB.withConnection { implicit connection =>
             SQL(
                 """
@@ -58,32 +58,32 @@ object Tache {
                     FROM 
                         taches 
                     WHERE 
-                        id_projet = {idProjet} and key = {key}
+                        id_projet = {idProjet} and apikey = {apikey}
                 """
             ).on(
                 'idProjet -> idProjet, 
-                'key      -> key
+                'apikey   -> apikey
             ).as(simple *)
         }
     }
 
-    def add(idProjet:String, tache:Tache, key:String) = {
+    def add(idProjet:String, tache:Tache, apikey:String) = {
         DB.withConnection { implicit connection =>
             SQL(
                 """
                     INSERT INTO taches 
-                        (nom, statut, utilisateur, date_creation, description, id_projet, key)
+                        (titre, statut, id_utilisateur, date_creation, description, id_projet, apikey)
                     VALUES 
-                        ({nom}, {statut}, {utilisateur}, {dateCreation}, {description}, {idProjet}, {key})
+                        ({titre}, {statut}, {idUtilisateur}, {dateCreation}, {description}, {idProjet}, {apikey})
                 """
             ).on(
-                'nom          -> tache.nom,
-                'statut       -> tache.statut, 
-                'utilisateur  -> tache.utilisateur, 
-                'dateCreation -> tache.dateCreation, 
-                'description  -> tache.description, 
-                'idProjet     -> idProjet, 
-                'key          -> key
+                'titre          -> tache.titre,
+                'statut         -> tache.statut, 
+                'idUtilisateur  -> tache.utilisateur, 
+                'dateCreation   -> tache.dateCreation.getMillis, 
+                'description    -> tache.description, 
+                'idProjet       -> idProjet, 
+                'apikey         -> apikey
             ).executeInsert()
         }
     }

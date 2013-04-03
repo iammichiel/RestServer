@@ -39,7 +39,7 @@ object Projet {
         }
     }
 
-    def insert(p:Projet, apikey:String):Boolean = {
+    def insert(p:Projet, apikey:String) = {
         DB.withConnection { implicit connection => 
             SQL(
                 """
@@ -50,11 +50,11 @@ object Projet {
                 'nom         -> p.nom, 
                 'description -> p.description,
                 'apikey      -> apikey
-            ).execute()
+            ).executeInsert()
         }
     }
 
-    def update(idProjet:String, p:Projet, apikey:String):Boolean = {
+    def update(idProjet:String, p:Projet, apikey:String) = {
         DB.withConnection { implicit connection => 
             SQL(
                 """
@@ -69,24 +69,24 @@ object Projet {
                 'description -> p.description,
                 'idProjet    -> idProjet,
                 'apikey      -> apikey
-            ).execute()
+            ).executeUpdate()
         }
     }
 
-    def delete(idProjet:String, apikey:String):Boolean = {
+    def delete(idProjet:String, apikey:String) = {
         DB.withConnection { implicit connection => 
             SQL(
                 "DELETE FROM projets WHERE id_projet = {idProjet} AND apikey = {apikey}"
             ).on(
                 'idProjet -> idProjet, 
                 'apikey   -> apikey 
-            ).execute()
+            ).executeUpdate()
         }
     }
 
     def deleteAll(apikey: String) = {
         DB.withConnection { implicit connection => 
-            SQL("DELETE FROM projets WHERE apikey = {apikey}").on('apikey -> apikey).execute()
+            SQL("DELETE FROM projets WHERE apikey = {apikey}").on('apikey -> apikey).executeUpdate()
         }
     }
 }
