@@ -44,7 +44,7 @@ class ProjetsSpec extends Specification {
                 ))
 
                 status(result) must equalTo(OK)
-                contentType(result) must beSome("application/javascript")
+                contentType(result) must beSome("application/json")
                 contentAsString(result) must contain("[]")
             }
         }
@@ -78,7 +78,7 @@ class ProjetsSpec extends Specification {
                 ))
 
                 status(lister) must equalTo(OK)
-                contentType(lister) must beSome("application/javascript")
+                contentType(lister) must beSome("application/json")
                 contentAsString(lister) must contain("\"id\":")
                 contentAsString(lister) must contain("\"nom\":\"projet-nom-test\"")
 
@@ -109,7 +109,7 @@ class ProjetsSpec extends Specification {
                     AnyContentAsFormUrlEncoded(Map())
                 ))
                 status(listeProjets) must equalTo(OK)
-                contentType(listeProjets) must beSome("application/javascript")
+                contentType(listeProjets) must beSome("application/json")
                 contentAsString(listeProjets) must contain("Nouveau nom")
             }
         }
@@ -138,7 +138,7 @@ class ProjetsSpec extends Specification {
                     AnyContentAsFormUrlEncoded(Map())
                 ))
                 status(listeProjets) must equalTo(OK)
-                contentType(listeProjets) must beSome("application/javascript")
+                contentType(listeProjets) must beSome("application/json")
                 contentAsString(listeProjets) must not contain("Nouveau nom")
             }
         }
@@ -162,7 +162,7 @@ class ProjetsSpec extends Specification {
                     AnyContentAsFormUrlEncoded(Map())
                 ))
                 status(listeProjets) must equalTo(OK)
-                contentType(listeProjets) must beSome("application/javascript")
+                contentType(listeProjets) must beSome("application/json")
                 contentAsString(listeProjets) must contain("[]")
             }
         }
@@ -178,7 +178,7 @@ class ProjetsSpec extends Specification {
                 ))
 
                 status(result) must equalTo(OK)
-                contentType(result) must beSome("application/javascript")
+                contentType(result) must beSome("application/json")
                 contentAsString(result) must contain("[]")
             }
         }
@@ -198,7 +198,7 @@ class ProjetsSpec extends Specification {
                 ))
 
                 status(listingTache) must equalTo(OK)
-                contentType(listingTache) must beSome("application/javascript")
+                contentType(listingTache) must beSome("application/json")
                 contentAsString(listingTache) must contain("[]")
             }
         }
@@ -229,7 +229,7 @@ class ProjetsSpec extends Specification {
                     AnyContentAsFormUrlEncoded(Map())
                 ))
                 status(listeTache) must equalTo(OK)
-                contentType(listeTache) must beSome("application/javascript")
+                contentType(listeTache) must beSome("application/json")
                 contentAsString(listeTache) must contain("\"titre\":\"michiel\"")
                 contentAsString(listeTache) must contain("\"statut\":\"0\"")
             }
@@ -286,7 +286,7 @@ class ProjetsSpec extends Specification {
                 ))
 
                 status(result) must equalTo(OK)
-                contentType(result) must beSome("application/javascript")
+                contentType(result) must beSome("application/json")
                 contentAsString(result) must contain("[]")
             }
         }

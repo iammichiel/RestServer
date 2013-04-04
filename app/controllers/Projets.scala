@@ -30,7 +30,7 @@ object Projets extends Controller with Authorization {
             Json.toJson(
                 Projet.all(apiKey.key).map { p => p.toJson }.toList
             )
-        ).as("application/javascript")
+        ).as("application/json")
     }
 
     // Ajoute un projet

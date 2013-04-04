@@ -33,7 +33,7 @@ object Taches extends Controller with Authorization {
     def listProjet(idProjet: String) = asUser { apiKey => _ => 
         Ok(Json.toJson(
             Tache.all(idProjet, apiKey.key).map { p => p.toJson }.toList
-        )).as("application/javascript")
+        )).as("application/json")
     }
 
     def add(idProjet: String) = asUser { apiKey => implicit request => 

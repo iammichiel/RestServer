@@ -42,7 +42,7 @@ object Utilisateurs extends Controller with Authorization {
             Json.toJson(
                 Utilisateur.all(apiKey.key).map { p => p.toJson }.toList
             )
-        ).as("application/javascript")
+        ).as("application/json")
     }
 
     def add = asUser { apiKey => implicit request =>
