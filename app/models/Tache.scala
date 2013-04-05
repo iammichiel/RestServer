@@ -87,4 +87,28 @@ object Tache {
             ).executeInsert()
         }
     }
+
+    def edit(idTache: String, tache:Tache, apikey: String) = {
+        DB.withConnection { implicit connection => 
+            SQL(
+                """
+                    UPDATE taches SET 
+                        titre = {titre}, 
+                        statut = {statut}, 
+                        description = {description}, 
+                        id_utilisateur = {utilisateur}
+                    WHERE 
+                        id_tache = {idTache} AND
+                        apikey   = {apikey}
+                """
+            ).on(
+                'idTache     -> idTache, 
+                'apikey      -> apikey, 
+                'titre       -> tache.titre, 
+                'description -> tache.description, 
+                'statut      -> tache.statut,
+                'utilisateur -> tache.utilisateur
+            ).executeUpdate()
+        }
+    }
 }

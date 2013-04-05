@@ -32,7 +32,7 @@ GET     /utilisateurs/delete/:id        controllers.Utilisateurs.delete(id: Stri
 GET     /taches/:idProjet               controllers.Taches.listProjet(idProjet: String)
 POST    /taches/add/:idProjet           controllers.Taches.add(idProjet: String)
 #POST    /utilisateurs/authenticate      controllers.Utilisateurs.authenticate
-#POST    /utilisateurs/edit/:id          controllers.Utilisateurs.edit(id: String)
+POST    /taches/edit/:idTache           controllers.Taches.edit(idTache: String)
 #GET     /utilisateurs/delete/:id        controllers.Utilisateurs.delete(id: String)
 
 

@@ -18,7 +18,7 @@ object Taches extends Controller with Authorization {
 
     val form = Form(
         mapping(
-            "titre"       -> text,
+            "titre"       -> nonEmptyText,
             "description" -> optional(text),
             "statut"      -> number,
             "utilisateur" -> optional(longNumber)
@@ -43,6 +43,16 @@ object Taches extends Controller with Authorization {
                 Tache.add(idProjet, tache, apiKey.key)
                 Created
             }
+        )
+    }
+
+    def edit(idTache: String) = asUser { apiKey => implicit request =>
+        form.bindFromRequest.fold(
+            errors => BadRequest(errors.errorsAsJson),  
+            tache => {
+                Tache.edit(idTache, tache, apiKey.key)
+                Ok
+            }  
         )
     }
 }
