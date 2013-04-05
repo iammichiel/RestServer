@@ -365,7 +365,47 @@ class ProjetsSpec extends Specification {
         }
 
         "supprimer une tache" in {
-            todo
+            running(defaultApplication) {
+                // Ajout d'un projet valide
+                val Some(addProjet) = ajoutProjet
+                status(addProjet) must equalTo(CREATED)
+
+                // Ajoute un utilisateur.
+                val Some(addUtilisateur1) = route(FakeRequest(POST, "/utilisateurs/add", headers, 
+                    AnyContentAsFormUrlEncoded(Map(
+                        "nom"        -> Seq("nom-1"), 
+                        "prenom"     -> Seq("prenom-1"), 
+                        "email"      -> Seq("user1@test.fr"), 
+                        "motdepasse" -> Seq("motdepasse-1")
+                    ))
+                ))
+                status(addUtilisateur1) must equalTo(CREATED)
+
+                // Ajout d'une tache
+                val Some(addTache) = route(FakeRequest(POST, "/taches/add/1", headers, 
+                    AnyContentAsFormUrlEncoded(Map(
+                        "titre"       -> Seq("titre-test"), 
+                        "description" -> Seq("tache-description-test"), 
+                        "statut"      -> Seq("0"), 
+                        "utilisateur" -> Seq()
+                    ))
+                ))
+                status(addTache) must equalTo(CREATED)
+
+                // Suppression de la tache.
+                val Some(deleteTache) = route(FakeRequest(GET, "/taches/delete/1", headers, 
+                    AnyContentAsFormUrlEncoded(Map())
+                ))
+                status(deleteTache) must equalTo(OK)
+
+                // Affichage de la liste des taches
+                val Some(liste) = route(FakeRequest(GET, "/taches/1", headers, 
+                    AnyContentAsFormUrlEncoded(Map())
+                ))
+                status(liste) must equalTo(OK)
+                contentType(liste) must beSome("application/json")
+                contentAsString(liste) must contain("[]")
+            }
         }
     }
 

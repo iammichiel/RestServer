@@ -55,4 +55,9 @@ object Taches extends Controller with Authorization {
             }  
         )
     }
+
+    def delete(idTache: String) = asUser { apiKey => implicit request => 
+        Tache.delete(idTache, apiKey.key)
+        Ok
+    }
 }

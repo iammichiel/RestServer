@@ -111,4 +111,15 @@ object Tache {
             ).executeUpdate()
         }
     }
+
+    def delete(idTache: String, apikey: String) = {
+        DB.withConnection { implicit connection =>
+            SQL(
+                "DELETE FROM taches WHERE id_tache = {idTache} AND apikey = {apikey}"
+            ).on(
+                'idTache -> idTache, 
+                'apikey  -> apikey
+            ).executeUpdate()
+        }
+    }
 }
