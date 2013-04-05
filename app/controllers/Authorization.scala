@@ -35,7 +35,7 @@ trait Authorization {
     def asUser(f: => ApiKey => Request[AnyContent] => Result) ={
         Security.Authenticated(username, onUnauthorized) { apiKey => 
             Action({ request =>
-                Logger.info("Acces granted - " + apiKey.prenom)
+                Logger.debug("Acces granted - " + apiKey.prenom)
                 f(apiKey)(request)
             })
         }
