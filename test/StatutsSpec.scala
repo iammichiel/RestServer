@@ -26,7 +26,11 @@ class StatutsSpec extends Specification {
 
                 status(result) must equalTo(OK)
                 contentType(result) must beSome("application/json")
-                contentAsString(result) must */("id" -> "En attente")
+                contentAsString(result) must */("nom" -> "En attente")
+                contentAsString(result) must */("nom" -> "En cours")
+                contentAsString(result) must */("nom" -> "En attente de validation")
+                contentAsString(result) must */("nom" -> "Terminé")
+                contentAsString(result) must */("nom" -> "Fermé")
             }
         }
     }
