@@ -8,6 +8,8 @@ import play.api.db._
 import play.api.Play.current
 import play.api.libs.json.Json
 
+import scala.language.postfixOps
+
 case class Utilisateur(
     id: Pk[Long] = NotAssigned, 
     prenom: String, 
