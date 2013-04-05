@@ -13,24 +13,6 @@ class ProjetsSpec extends Specification {
   
     val headers = FakeHeaders(Seq("api-key" -> Seq("michiel")))
 
-    // Ajout d'un utilisateur
-    def ajoutUtilisateur = route(FakeRequest(POST, "/utilisateurs/add", headers, 
-        AnyContentAsFormUrlEncoded(Map(
-            "nom"        -> Seq("missotten"), 
-            "prenom"     -> Seq("michiel"), 
-            "email"      -> Seq("michiel@lil-web.fr"), 
-            "motdepasse" -> Seq("hello")
-        ))
-    ))
-
-    // Ajout d'un projet
-    def ajoutProjet = route(FakeRequest(POST, "/projets/add", headers, 
-        AnyContentAsFormUrlEncoded(Map(
-            "nom" -> Seq("projet-nom-test")
-        ))
-    ))
-
-    // Initialisation d'une application. 
     def defaultApplication = FakeApplication(
         additionalConfiguration = (inMemoryDatabase(options = Map("MODE" -> "MySQL")))
     )
@@ -51,7 +33,11 @@ class ProjetsSpec extends Specification {
 
         "ajouter un projet valide" in {
             running(defaultApplication) {
-                val Some(result) = ajoutProjet
+                val Some(result) = route(FakeRequest(POST, "/projets/add", headers, 
+                    AnyContentAsFormUrlEncoded(Map(
+                        "nom" -> Seq("projet-nom-test")
+                    ))
+                ))
                 status(result) must equalTo(CREATED)
             }
         }
@@ -70,7 +56,11 @@ class ProjetsSpec extends Specification {
 
         "ajouter un projet valide et le voir dans la liste" in {
             running(defaultApplication) {
-                val Some(addProjet) = ajoutProjet
+                val Some(addProjet) = route(FakeRequest(POST, "/projets/add", headers, 
+                    AnyContentAsFormUrlEncoded(Map(
+                        "nom" -> Seq("projet-nom-test")
+                    ))
+                ))
                 status(addProjet) must equalTo(CREATED)
 
                 val Some(lister) = route(FakeRequest(GET, "/projets", headers, 
@@ -207,7 +197,11 @@ class ProjetsSpec extends Specification {
             running(defaultApplication) {
 
                 // Ajout d'un projet valide
-                val Some(addProjet) = ajoutProjet
+                val Some(addProjet) =  route(FakeRequest(POST, "/projets/add", headers, 
+                    AnyContentAsFormUrlEncoded(Map(
+                        "nom" -> Seq("projet-nom-test")
+                    ))
+                ))
                 status(addProjet) must equalTo(CREATED)
 
                 // Ajout d'une tache
@@ -239,11 +233,22 @@ class ProjetsSpec extends Specification {
             running(defaultApplication) {
 
                 // Ajout d'un projet valide
-                val Some(addProjet) = ajoutProjet
+                val Some(addProjet) =  route(FakeRequest(POST, "/projets/add", headers, 
+                    AnyContentAsFormUrlEncoded(Map(
+                        "nom" -> Seq("projet-nom-test")
+                    ))
+                ))
                 status(addProjet) must equalTo(CREATED)
 
                 // Ajoute un utilisateur.
-                val Some(addUtilisateur) = ajoutUtilisateur
+                val Some(addUtilisateur) = route(FakeRequest(POST, "/utilisateurs/add", headers, 
+                    AnyContentAsFormUrlEncoded(Map(
+                        "nom"        -> Seq("nom-1"), 
+                        "prenom"     -> Seq("prenom-1"), 
+                        "email"      -> Seq("user1@test.fr"), 
+                        "motdepasse" -> Seq("motdepasse-1")
+                    ))
+                ))
                 status(addUtilisateur) must equalTo(CREATED)
 
                 // Ajout d'une tache
@@ -262,7 +267,11 @@ class ProjetsSpec extends Specification {
         "editer une tache" in {
             running(defaultApplication) {
                 // Ajout d'un projet valide
-                val Some(addProjet) = ajoutProjet
+                val Some(addProjet) =  route(FakeRequest(POST, "/projets/add", headers, 
+                    AnyContentAsFormUrlEncoded(Map(
+                        "nom" -> Seq("projet-nom-test")
+                    ))
+                ))
                 status(addProjet) must equalTo(CREATED)
 
                 // Ajoute un utilisateur.
@@ -323,7 +332,11 @@ class ProjetsSpec extends Specification {
             running(defaultApplication) {
 
                 // Ajout d'un projet valide
-                val Some(addProjet) = ajoutProjet
+                val Some(addProjet) =  route(FakeRequest(POST, "/projets/add", headers, 
+                    AnyContentAsFormUrlEncoded(Map(
+                        "nom" -> Seq("projet-nom-test")
+                    ))
+                ))
                 status(addProjet) must equalTo(CREATED)
 
                 // Ajoute un utilisateur.
@@ -367,7 +380,11 @@ class ProjetsSpec extends Specification {
         "supprimer une tache" in {
             running(defaultApplication) {
                 // Ajout d'un projet valide
-                val Some(addProjet) = ajoutProjet
+                val Some(addProjet) =  route(FakeRequest(POST, "/projets/add", headers, 
+                    AnyContentAsFormUrlEncoded(Map(
+                        "nom" -> Seq("projet-nom-test")
+                    ))
+                ))
                 status(addProjet) must equalTo(CREATED)
 
                 // Ajoute un utilisateur.
