@@ -55,4 +55,9 @@ object Commentaire {
             ).as(simple *)
         }
     }
+
+    def add(idTache: String, apikey: String = {
+        DB.withConnection { implicit connection => 
+        }
+    }
 }
