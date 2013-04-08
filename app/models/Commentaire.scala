@@ -56,8 +56,21 @@ object Commentaire {
         }
     }
 
-    def add(idTache: String, apikey: String = {
+    def add(idTache: String, commentaire:Commentaire, apikey: String) = {
         DB.withConnection { implicit connection => 
+            SQL(
+                """
+                    INSERT INTO commentaires 
+                        (id_utilisateur, date_creation, contenu, apikey) 
+                    VALUES 
+                        ({idUtilisateur}, {dateCreation}, {contenu}, {apikey})
+                """
+            ).on(
+                'idUtilisateur -> commentaire.utilisateur,
+                'dateCreation  -> commentaire.dateCreation,
+                'contenu       -> commentaire.contenu,
+                'apikey        -> apikey
+            ).executeInsert()
         }
     }
 }
