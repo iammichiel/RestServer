@@ -1,29 +1,30 @@
 # Capistrano deploy file
 # Your application name
 set :application, "Rest"
+role :web, "anivia"
  
 # We're not deploying from a repo, since this is scala and we
 # need to compile. Set SCM to none
-set :scm, :none
+set :scm, :jenkins
+set :repository,  "http://anivia.lil-web.fr:8080/job/Rest-Server/"
+set :jenkins_artifact_path, 'archive/dist'
+set :scm_username, ENV['JENKINS_USERNAME']
+set :scm_password, ENV['JENKINS_PASSWORD']
 
-# Our deploy is to copy the contents of…
-set :deploy_via, :copy
-
-# the target directory! In this case repository is really
-# a pointer to the directory
-set :repository,  "target"
+# Application configuration
 set :log_path, "/var/log/rest/application.log"
  
-# You can use multiple here, if that's what you have
-role :web, "anivia"
-
 # Configuration.
 set :deploy_to, "/var/www/rest"
-set :copy_exclude, ["streams", "scala*"]
 set :use_sudo, false
 
 # Démarrage et arret de Play. 
 namespace :deploy do
+
+    # Zipper. 
+    task :unzip do
+        run "unzip #{release_path}/*.zip -d #{release_path}/"
+    end
 
     # Override start run current/start. The options are options to play
     # specifying a config file and pidfile
@@ -40,14 +41,5 @@ namespace :deploy do
     end
 end
 
-namespace :play do 
-    task :compile do 
-        system("play clean compile stage")
-    end
-end
-
-# Compilation 
-before "deploy:update", "play:compile"
-
 # Redémarrage
-after "deploy:update_code", "deploy:stop", "deploy:start"
+after "deploy:update_code", "deploy:unzip", "deploy:stop", "deploy:start"
