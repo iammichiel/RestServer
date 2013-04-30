@@ -28,7 +28,7 @@ release_folder = install_dir + "/" + release_name
 
 def deploy():
 
-    version = prompt(blue("Version a deployer ?"), default="1.0-SNAPSHOT")
+    version = prompt(blue("Version a deployer ?"), default="0.1.0")
     version_name = application_name + "-" + version
     zipname =  version_name + ".zip"
 
@@ -67,7 +67,7 @@ def deploy():
     with cd(release_folder):
         print blue("Starting new release...")
         run("chmod +x ./start")
-        run("nohup sh ./start >/dev/null 2>&1 & sleep 5")
+        run("nohup sh ./start -DapplyEvolutions.default=true >/dev/null 2>&1 & sleep 5")
 
     # Create current link
     with cd(install_dir):
