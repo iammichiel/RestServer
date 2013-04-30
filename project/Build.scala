@@ -5,7 +5,7 @@ import play.Project._
 object ApplicationBuild extends Build {
 
     val appName         = "RestServer"
-    val appVersion      = "2.0-SNAPSHOT"
+    val appVersion      = "0.1.0"
 
     val appDependencies = Seq(
         jdbc, anorm, 

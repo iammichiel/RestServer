@@ -52,12 +52,16 @@ def deploy():
     with cd(install_dir):
 
         # Existe il un dossier current et un fichier RUNNING_PID? 
-        if os.path.exists("current") and os.path.exists("current/RUNNING_PID"):
-            with cd("current"):
-                print blue("Stopping current application...")
-                run("kill `cat RUNNING_PID`")
+        if os.path.exists(install_dir + "current"):
+            print "the folder exists"
+            if os.path.exists(install_dir + "current/RUNNING_PID"):
+                with cd("current"):
+                    print blue("Stopping current application...")
+                    run("kill `cat RUNNING_PID`")
+            else:
+                print "PID file not found"
         else:
-            print blue("No running application found...")
+            print blue("No current folder running application found...")
 
     # Start current
     with cd(release_folder):
