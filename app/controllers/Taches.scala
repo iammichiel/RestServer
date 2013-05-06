@@ -18,7 +18,7 @@ object Taches extends Controller with Authorization {
 
     val form = Form(
         mapping(
-            "titre"       -> nonEmptyText,
+            "titre"       -> nonEmptyText(maxLength = 80),
             "description" -> optional(text),
             "statut"      -> number,
             "utilisateur" -> optional(longNumber)

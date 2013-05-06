@@ -35,16 +35,6 @@ POST    /taches/edit/:idTache           controllers.Taches.edit(idTache: String)
 GET     /taches/delete/:idTache         controllers.Taches.delete(idTache: String)
 
 
-# COMMENTAIRE
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GET     /commentaires/:idTache          controllers.Commentaires.listTache(idTache: String)
-
-
-# ADMIN
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GET     /administration/delete          controllers.Application.deleteAll
-
-
 # Assets
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 GET     /assets/*file                   controllers.Assets.at(path="/public", file)

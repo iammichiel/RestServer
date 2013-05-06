@@ -67,7 +67,8 @@ def deploy():
     with cd(release_folder):
         print blue("Starting new release...")
         run("chmod +x ./start")
-        run("nohup sh ./start -DapplyEvolutions.default=true >/dev/null 2>&1 & sleep 5")
+        run("mkdir logs && touch logs/application.log")
+        run("nohup sh ./start -DapplyEvolutions.default=true -DapplyDownEvolutions.default=true > ./logs/application.log & sleep 5")
 
     # Create current link
     with cd(install_dir):

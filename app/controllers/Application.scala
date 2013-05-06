@@ -15,12 +15,4 @@ object Application extends Controller with Authorization {
         
         Ok(views.html.main(t))
     }
-
-    def deleteAll = asUser { apiKey => _ => 
-        Projet.deleteAll(apiKey.key)
-        // Utilisateur.deleteAll(apikey)
-        //Taches.deleteAll(apiKey)
-
-        Ok
-    }
 }

@@ -17,7 +17,6 @@ class TachesSpec extends Specification {
         additionalConfiguration = (inMemoryDatabase(options = Map("MODE" -> "MySQL")))
     )
 
-
     "L'API Taches : " should {
 
         "etre vide si aucun projet existe" in {
