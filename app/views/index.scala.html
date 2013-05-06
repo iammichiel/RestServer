@@ -1,5 +1,39 @@
 @()
 
-# Rest-server. 
+# Projet Web 2
+L'objectif de ce projet est de valider les connaissance acquises durant ce semestre au travers d'un projet d'envergure professionnelle avec des critères d'évaluations professionnels.
 
-La documentation se trouve ici : [http://docs.restserverflst.apiary.io/](http://docs.restserverflst.apiary.io/)
+## Technique
+Le projet devra être réalisé à l'aide de certains outils : 
+
+- CodeIgniter comme Framework PHP
+- Twitter Bootstrap pour la partie présentation des données
+
+
+## Description
+Le projet à réaliser est un site web de gestion de projet pour une entreprise quelconque et devra avoir les fonctionnalités suivantes :
+
+1. Possibilité de se connecter/déconnecter. Il faut pouvoir configurer un ensemble d'utilisateurs autorisées à se connecter à l'application et aucune page ne doit être accéssible à un utilisateur anonyme. 
+
+2. Création de projets
+Un utilisateur peut créer un projet. Il est possible de modifier ou supprimer un projet. 
+
+3. Il est possible de créer de nouvelle taches dans un projet. Tout comme pour les projets, il est possible de modifier ou supprimer chaque tache. Chaque tache a un ensemble d'informations : 
+    - Titre 
+    - Description
+    - Statut 
+    - Date de création
+    - Utilisateur affecté à la tache
+
+4. Suivi des taches. Une tache a plusieurs statuts :
+    - En attente
+    - En cours
+    - Résolu (réalisé)
+    - Fermé (non réalisé)
+Seul l'utilisateur affecté à une tache peut changer son statut.
+
+5. Dashboard. Chaque utilisateur aura accès à une dashboard personnalisé. Il aura un accès rapide aux taches qui lui sont affectés et pourra rapidement voir l'état d'avancement des différents projets.
+ 
+
+
+La documentation de l'API se trouve ici : [http://docs.restserverflst.apiary.io/](http://docs.restserverflst.apiary.io/)
